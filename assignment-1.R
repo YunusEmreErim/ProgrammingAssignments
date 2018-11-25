@@ -37,6 +37,54 @@ Differences_Countries <-
   filter(count >= 6) %>%
   arrange(dif_net_worth)
 
+# Q5 ----------------------------------------------------------------------
+
+bar <- ggplot(data = Differences_Countries) +
+  geom_bar(mapping = aes(x = country, y = dif_net_worth, fill = dif_net_worth), stat = "identity")
+bar + coord_flip()
+
+# Q6 ----------------------------------------------------------------------
+
+Differences_Countries$country <- factor(Differences_Countries$country, levels = Differences_Countries$country[order(Differences_Countries$dif_net_worth)])
+
+bar <- ggplot(data = Differences_Countries) +
+  geom_bar(mapping = aes(x = country, y = dif_net_worth, fill = dif_net_worth), stat = "identity")
+bar + coord_flip()
+
+# Q7 ----------------------------------------------------------------------
+
+shared_ranks <-
+  rich_list %>%
+  group_by(rank) %>%
+  summarize(count = n()) %>%
+  filter(count > 1)
+
+View(shared_ranks)
+
+# Q8 ----------------------------------------------------------------------
+
+average_rank <- shared_ranks
+average_rank <-
+  mutate(average_rank, other_rank = rank + count - 1)
+average_rank <-
+  mutate(average_rank, avrg_rank = ((rank + other_rank) / 2))
+
+# Q9 ----------------------------------------------------------------------
+
+library("rworldmap")
+
+country_worth <- rich_list %>%
+  group_by(country) %>%
+  summarize(total_net_worth = log(sum(net_worth)))
+
+CountryData <- joinCountryData2Map(country_worth, joinCode = "NAME", nameJoinColumn = "country" )
+
+mapCountryData(CountryData,
+               nameColumnToPlot = "total_net_worth",
+               mapTitle = "Total Net Worth of Billionaires by their Countries",
+               colourPalette = "heat",
+               addLegend = TRUE,
+               oceanCol = "lightgray", missingCountryCol = "grey")
 
 
 
