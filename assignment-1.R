@@ -23,6 +23,20 @@ ggplot(data = rich_list) +
 
 # YES, it helps observing the positive correlation. When age plotted against net_worth, since the internak of net_worth is large, it is hard to observe the relation.
 
+# Q4 ----------------------------------------------------------------------
+
+Differences_Countries <-
+  rich_list %>%
+  group_by(country) %>%
+  summarize(
+    count = n(),
+    max_net_worth = max(net_worth),
+    min_net_worth = min(net_worth),
+    dif_net_worth = max_net_worth - min_net_worth) %>%
+  
+  filter(count >= 6) %>%
+  arrange(dif_net_worth)
+
 
 
 
