@@ -137,3 +137,54 @@ answer3 <- filter_names(extracted)
 # I have deleted them, I am sorry for the repetetive "capitalized" mess.
 
 
+# Question 4 ------------------------------------------------------------------------------------------------------
+
+# I am writing a function to use it in the function below, it Capitilizes the first letter of a word.
+
+capFirst <- function(s) {
+  paste(toupper(substring(s, 1, 1)), substring(s, 2), sep = "")
+}  
+
+# count_names_per_book
+
+#' Counts names and unique names in books
+#'
+#' @param data dataframe
+#' @param names a list of names that are counted
+#'
+#' @return a data frame with three columns; "title" book titles, "unique_names' number of unique names per book,
+#' and "name_occurrences" total number of name occurrences per book. 
+
+count_names_per_book <- function(data, names) {  
+  names_with_books <- data %>%
+    extract_possible_names() %>% 
+    left_join(select(data, title, id), by = c("text_id" = "id")) 
+  
+  colnames(names_with_books)<- c("text_id", "Var1", "id", 'title')
+  levels(names_with_books$Var1) <- tolower(levels(names_with_books$Var1))  
+  
+  names_with_books$Var1 <- capFirst(names_with_books$Var1)       
+  names$Var1 <- capFirst(names$Var1)  
+  
+  list <- left_join(names, names_with_books, by = "Var1")
+  list <- list %>%
+    select(Var1, title, id)  
+  
+  occurrences <- list %>% 
+    count(title) 
+  colnames(occurrences) <- c("title", "name_occurrences")
+  
+  uniques <- list %>% 
+    group_by(title) %>%
+    distinct(Var1) %>% 
+    count(title)
+  colnames(uniques) <- c("title", "unique_names")
+  
+  lastlist <- left_join(uniques, occurrences, by = "title")
+  
+}
+
+lastanswer <- count_names_per_book(austen_text, answer3)
+
+
+
