@@ -82,3 +82,58 @@ extract_possible_names <- function(data){
 } 
 
 answer2 <- extract_possible_names(austen_text)  
+
+
+# Question 3 ------------------------------------------------------------------------------------------------------
+
+# I am calling Freqs;
+
+Freqs <- readRDS("austen_word_freqs.Rds")
+
+colnames(Freqs) <- c("Var1", "Freq")
+
+# I am writing a function to display the rates neatly, later on in the next function.
+
+percent <- function(x, digits = 2, format = "f", ...) {
+  paste0(formatC(100 * x, format = format, digits = digits, ...), "%")
+}
+
+# filter_names / I am counting the Capitaliazed words, "Freqs" is right joining to those, 
+# first filtering never Capitalized words, calculating the rates and eliminating those with less than 75% rate,
+# displaying words and their percentages, they are capitalized at least 75% of the time.
+
+#' Filters out non-name words 
+#'
+#' @param data dataframe
+#'
+#' @return a data frame with two columns; "Var1" filtered names, "percentage' for their rates,
+#' first letters of all words are lower case automatically
+
+filter_names <- function(data) {
+  capitalized <- data
+  
+  capitalized <- data.frame(table(unlist(strsplit(tolower(capitalized$name), " ")))) %>% 
+    right_join(Freqs, by = "Var1")
+  
+  capitalized <- capitalized[!(is.na(capitalized$Freq.x) | capitalized$Freq.x==""), ] %>% 
+    mutate(rate = Freq.x / Freq.y)
+  
+  capitalized <- capitalized[!(capitalized$rate <= 0.75),] 
+  
+  capitalized <- mutate(capitalized, percentage = percent(capitalized$rate))
+  
+  capitalized <- capitalized %>%
+    select(Var1, percentage)
+}
+
+
+# I am calling the answer (dataframe) of the previous question to work on it. 
+
+extracted <- extract_possible_names(austen_text)
+
+answer3 <- filter_names(extracted)
+
+# I tried to use pipes, however, at most of the points, they were creating problems, thus, 
+# I have deleted them, I am sorry for the repetetive "capitalized" mess.
+
+
