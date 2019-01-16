@@ -53,6 +53,9 @@ get_land_area <- function(country_link){
 vector <- c("geos/et.html","geos/tu.html")
 trial<- get_land_area(vector)
 
+# It also worked when I tried for the full vector of 238 countries with first_answer$country_link, as shown below.
+# It took 2-3 minutes in my laptop. But gives the right and complete dataframe. So, please wait for it. 
+
 second_answer<- get_land_area(first_answer$country_link)
 
 
@@ -77,6 +80,9 @@ get_population_density <- function(){
   
 }
 
+# Since there is "second_answer" in the function, final answer (second_answer<- get_land_area(first_answer$country_link) from the previous question 
+# has to be run before this one.
+
 third_answer <- get_population_density()
 
 
@@ -100,10 +106,11 @@ get_rankings <- function(){
   tibble4$characteristic_link <- str_replace_all(tibble4$characteristic_link, "^../", "")
   tibble4$characteristic <- str_replace_all(tibble4$characteristic, ":", "")
   tibble4$characteristic <- tolower(tibble4$characteristic)
+  return(tibble4)
   View(tibble4) 
 }
 
-get_rankings()
+fourth_answer <- get_rankings()
 
 
 
@@ -182,4 +189,5 @@ combine_rankings <- function(rankings){
 
 # It is slower than previous answers, but works. 
 
-View(combine_rankings(tibble4))
+View(combine_rankings(fourth_answer))
+sixth_answer <- combine_rankings(fourth_answer)
